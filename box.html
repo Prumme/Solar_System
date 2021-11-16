@@ -11,8 +11,14 @@
 			import * as THREE from './three.js-master/build/three.module.js';
             import { OrbitControls } from './three.js-master/examples/jsm/controls/OrbitControls.js';
 
+            /*Déclaration de toutes les variables 
+             * Pour chaques planetes, on déclare :
+             * - son nom qui justifiera l'objet ("la planete")
+             * - son rayon que l'on utilise pour la taille de la planète
+             * - son angle que l'on utilise pour determiné sa position au tour de son astre d'origine (le soleil pour la majorité)  
+            */
 			let camera, scene, renderer;
-			let earth, radius_earth = 50, alpha_earth=30, earth_position_x, earth_position_y, earth_position_z ;
+			let earth, radius_earth = 50, alpha_earth=30, earth_position_x, earth_position_y, earth_position_z ; //La position de la terre est nécessaire pour la lune
             let moon, radius_moon = 30, alpha_moon = 20;
             let sun, radius_sun = 180, alpha_sun= 45 ;
             let mercury, radius_mercury = 25, alpha_mercury=56;
@@ -23,40 +29,59 @@
             let saturn_ring;
             let uranus, radius_uranus = 50, alpha_uranus=87;
             let neptune, radius_neptune = 60, alpha_neptune= 168;
+            let galaxy, radius_galaxy = 500000;
             let faster = 2;
             let stop = 1;
 
+             /* Définition des textures */
+
+            const earth_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/earth.jpg' );
+            const moon_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/moon.jpg' );
+            const sun_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/sun.jpg' );
+            const mercury_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/mercury.jpg' );
+            const venus_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/venus.jpg' );
+            const mars_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/mars.jpg' );
+            const jupiter_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/jupiter.jpg' );
+            const saturn_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/saturn.jpg' );
+            const saturn_ring_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/saturn_ring.jpg' );
+            const uranus_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/uranus.jpg' );
+            const neptune_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/neptune.jpg' );
+            const galaxy_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/8k_stars_milky_way.jpeg' );
+
+            //On appelle la fonction init()
 			init();
+
+            //On appelle la fonction animate()
 			animate();
 
+
+            /* La fonction init() permet:
+             * - de positionner la camera, de changer son angle 
+             * - de définir les formes et le materiel des objets (planètes)
+             * - d'ajouter les objets à la scène
+             * - de positionner les objet (planètes)
+            
+            */
 			function init() {
 
                 /*Création de la caméra*/
-				camera = new THREE.PerspectiveCamera( 1000, window.innerWidth / window.innerHeight, 1, 9000 );
+				camera = new THREE.PerspectiveCamera( 1000, window.innerWidth / window.innerHeight, 1, 9000000 );
 				camera.position.z = 2900;
                 camera.position.y = -1800;
                 camera.rotation.x = 0.7;
 
 				scene = new THREE.Scene();
 
-                /* Définition des textures */
-				const earth_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/earth.jpg' );
-                const moon_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/moon.jpg' );
-                const sun_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/sun.jpg' );
-                const mercury_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/mercury.jpg' );
-                const venus_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/venus.jpg' );
-                const mars_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/mars.jpg' );
-                const jupiter_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/jupiter.jpg' );
-                const saturn_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/saturn.jpg' );
-                const saturn_ring_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/saturn_ring.jpg' );
-                const uranus_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/uranus.jpg' );
-                const neptune_texture = new THREE.TextureLoader().load( 'three.js-master/examples/textures/neptune.jpg' );
-
-
-                const geometry_earth = new THREE.SphereGeometry( radius_earth*2, 32, 16 );
-                const material_earth = new THREE.MeshBasicMaterial( { map: earth_texture } );
-                earth = new THREE.Mesh( geometry_earth, material_earth );
-                scene.add( earth );
+                /* Démonstration de la création de la planète terre 
+                 * 1 On définit la geometrie de la terre => une sphere de diametre égale à radius_earthx2, un nombre de segment définissant la rondeur sur la largeur, un nombre de segment définissant la rondeur sur la hauteur 
+                 * 2 On définit le matériel/ la texture de l'objet
+                 * 3 On définit un objet avec la forme et la texture céfinit plutôt
+                 * 4 On ajoute l'objet à la scène
+                 */
+        /* 1 */ const geometry_earth = new THREE.SphereGeometry( radius_earth*2, 32, 16 );
+        /* 2 */ const material_earth = new THREE.MeshBasicMaterial( { map: earth_texture } )
+        /* 3 */ earth = new THREE.Mesh( geometry_earth, material_earth );
+        /* 4 */ scene.add( earth );
 
                 const geometry_moon = new THREE.SphereGeometry( radius_moon*2, 32, 16 );
                 const material_moon = new THREE.MeshBasicMaterial( { map: moon_texture } );
@@ -115,6 +140,12 @@
                 neptune = new THREE.Mesh( geometry_neptune, material_neptune);
                 
                 scene.add( neptune );
+
+                const geometry_galaxy = new THREE.SphereGeometry( radius_galaxy*2, 32, 16 );
+                const material_galaxy = new THREE.MeshBasicMaterial( { map: galaxy_texture , side: THREE.DoubleSide } );
+                galaxy = new THREE.Mesh( geometry_galaxy, material_galaxy);
+                
+                scene.add( galaxy );
 				
 				
                 /* position de départ des Planètes */
@@ -122,54 +153,53 @@
                 sun.position.y = 0;
                 sun.position.z = 0;
 
+                /* Pour la position de départ on multiplie la distance planete-soleil par le cos(l'angle) pour la x et le sin(l'angle) pour l'axe z
+                 * Grace à la trigonométrie on sait que X = cos(alpha)*X + sin(alpha)*X 
+                 * Grace à cette formule on peut faire tourné un objet autour d'une origine sans que la distance planete-origine change
+                */
                 mercury.position.x = 745*Math.cos(alpha_mercury);
-                mercury.position.y = 0;
+                mercury.position.y = Math.sin(alpha_mercury) * 300;
                 mercury.position.z = 745*Math.sin(alpha_mercury);
 
                 venus.position.x = 1165*Math.cos(alpha_venus);
-                venus.position.y = 0;
+                venus.position.y = Math.sin(alpha_venus) * 300;
                 venus.position.z = 1165*Math.sin(alpha_venus);
 
                 mars.position.x = 1460*Math.cos(alpha_mars);
-                mars.position.y = 0;
-                mars.position.z = 1460*Math.sin(alpha_venus);
+                mars.position.y = Math.sin(alpha_mars) * 300;
+                mars.position.z = 1460*Math.sin(alpha_mars);
 
                 earth_position_x = 1870*Math.cos(alpha_earth);
-                earth_position_y = 0;
+                earth_position_y = Math.sin(alpha_earth) * 300;
                 earth_position_z = 1870*Math.sin(alpha_earth);
 
-                earth.position.x = 1870*Math.cos(alpha_earth);
-                earth.position.y = 0;
-                earth.position.z = 1870*Math.sin(alpha_earth); 
-
+                
                 moon.position.x= earth_position_x + 300*Math.cos(alpha_moon);
-                moon.position.y = 0;
+                moon.position.y =  Math.sin(alpha_earth) * 300 + Math.sin(alpha_moon) * 300;
                 moon.position.z = earth_position_x + 300*Math.sin(alpha_moon);
 
 
                 jupiter.position.x = 2305*Math.cos(alpha_jupiter);
-                jupiter.position.y = 0;
+                jupiter.position.y = Math.sin(alpha_jupiter) * 300;
                 jupiter.position.z = 2305*Math.sin(alpha_jupiter);
 
                 saturn.position.x = 2745*Math.cos(alpha_saturn);
-                saturn.position.y = 0;
+                saturn.position.y = Math.sin(alpha_saturn) * 300;
                 saturn.position.z = 2745*Math.sin(alpha_saturn);
 
                 saturn_ring.position.x = 2745*Math.cos(alpha_saturn);
-                saturn_ring.position.y = 0;
+                saturn_ring.position.y =  Math.sin(alpha_saturn) * 300;
                 saturn_ring.position.z = 2745*Math.sin(alpha_saturn);
                 
 
                 uranus.position.x = 3155*Math.cos(alpha_uranus);
-                uranus.position.y = 0;
+                uranus.position.y = Math.sin(alpha_uranus) * 300;
                 uranus.position.z = 3155*Math.sin(alpha_uranus);
 
                 neptune.position.x = 3575*Math.cos(alpha_neptune);
-                neptune.position.y = 0;
+                neptune.position.y = Math.sin(alpha_neptune) * 300;
                 neptune.position.z = 3575*Math.sin(alpha_neptune);
 
-                /* Mouvement des planete */ 
-               
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -184,7 +214,7 @@
                 cameraControl.update();
 
 			}
-
+            //Cette fonction permet de recentrer le centre lors du changemet de taille de la fenetre
 			function onWindowResize() {
 
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -194,10 +224,17 @@
 
 			}
 
+            /*La fontion animate permet :
+             * - de modifier la rotation des objets
+             * - de modifier la position des objets
+             * - d'inserer des évenements 
+            */
 			function animate() {
 
+                //Rappelle la fonction animate afin de faire un animation, le callback doit ce faire plus tôt que le raffraichement  
 				requestAnimationFrame( animate );
 
+                //On fait faire des rotations sur l'axe Y au planete
 				earth.rotation.y += (0.005 * faster)*stop;
                 sun.rotation.y +=(0.003 * faster)*stop;
                 jupiter.rotation.y += (0.01 * faster)*stop;
@@ -207,8 +244,15 @@
                 saturn.rotation.y += (0.01 * faster)*stop;
                 uranus.rotation.y += (0.0008 * faster)*stop;
                 neptune.rotation.y += (0.002 * faster)*stop;
+                galaxy.rotation.y -= 0.00006 *stop;
+                galaxy.rotation.z += 0.00007 *stop;
+                galaxy.rotation.x -= 0.00008 *stop;
 
 
+
+                /* Mouvement des planete */ 
+                
+                //Pour Faire tourner les planetes, on prend la même formule que pour la position mais on change l'angle
                 mercury.position.x = Math.cos(alpha_mercury)*(745);
                 mercury.position.z = Math.sin(alpha_mercury)*(745);
                 alpha_mercury += (0.01 * faster)*stop;
@@ -220,7 +264,6 @@
                 mars.position.x = Math.cos(alpha_mars)*(1460);
                 mars.position.z = Math.sin(alpha_mars)*(1460);
                 alpha_mars += (0.003 * faster)*stop;
-
 
                 earth_position_x = 1870*Math.cos(alpha_earth);
                 earth_position_y = 0;
@@ -254,19 +297,26 @@
                 neptune.position.z = Math.sin(alpha_neptune)*(3575);
                 alpha_neptune += (0.002 * faster)*stop;
 
+
+                //Cette partie permet de recupéré chaque touches pressées
                 window.addEventListener("keydown", function (event) {
                 if (event.defaultPrevented) {
                   return; 
-                }
+                }   
+                    // Si la touche fleche de gauche est préssé alors on décrémente faster de deux
                     switch (event.key) {
                     case "ArrowLeft":   
                         faster = faster - 2 
                         console.log(faster);
                     break;
+
+                    // Si la touche fleche de droite est préssé alors on incrémente faster de deux
                     case "ArrowRight":
                         faster = faster + 2
                         console.log(faster);
                     break;
+
+                    // Si la touche fleche du haut est préssé alors on fait changer la valeur stop entre 1 et 0
                     case "ArrowUp":
                        if(stop == 0){
                            stop = 1;
